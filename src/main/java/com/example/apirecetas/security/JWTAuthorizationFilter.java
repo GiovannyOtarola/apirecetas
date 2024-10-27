@@ -17,7 +17,7 @@ import javax.crypto.SecretKey;
 import static com.example.apirecetas.contants.Constants.*;
 
 @Component
-public class JWTAuthorizationFilter extends OncePerRequestFilter{
+public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private Claims setSigningKey(HttpServletRequest request) {
         String jwtToken = request.
@@ -32,28 +32,33 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 
     }
 
-    private void setAuthentication(Claims claims) {
-
-        List authorities = (List) claims.get("authorities");
-
-        UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
-                        authorities.stream().map(SimpleGrantedAuthority:: new).collect(Collectors.toList()));
+//    private void setAuthentication(Claims claims) {
+//        List<String> authorities = (List<String>) claims.get("authorities"); // Casting a List<String>
 //
-//        SecurityContextHolder.getContext().setAuthentication(auth);
-//        List<?> authorities = (List<?>) claims.get("authorities"); // Using wildcard for List type
 //        UsernamePasswordAuthenticationToken auth =
 //                new UsernamePasswordAuthenticationToken(
 //                        claims.getSubject(),
 //                        null,
 //                        authorities.stream()
-//                                .map(authority -> new SimpleGrantedAuthority((String) authority)) // Cast to String
+//                                .map(SimpleGrantedAuthority::new)
 //                                .collect(Collectors.toList())
 //                );
+//
+//        SecurityContextHolder.getContext().setAuthentication(auth);
+//    }
+
+    private void setAuthentication(Claims claims) {
+
+        List<String> authorities =(List<String>) claims.get("authorities");
+
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
+                        authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
     }
+
 
     private boolean isJWTValid(HttpServletRequest request, HttpServletResponse res) {
         String authenticationHeader = request.getHeader(HEADER_AUTHORIZACION_KEY);
