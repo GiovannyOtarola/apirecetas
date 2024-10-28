@@ -21,8 +21,8 @@ public class PublicController {
 
     @GetMapping("/home")
     public Map<String, Object> getHomePage() {
-        List<Receta> recetasRecientes = recetaService.getRecetasRecientes();
-        List<Receta> recetasPopulares = recetaService.getRecetasPopulares();
+        List<Map<String, Object>> recetasRecientes = recetaService.getRecetasRecientes();
+        List<Map<String, Object>> recetasPopulares = recetaService.getRecetasPopulares();
         List<String> banners = List.of("Banner 1", "Banner 2");
 
         Map<String, Object> response = new HashMap<>();
