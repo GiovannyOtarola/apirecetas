@@ -26,4 +26,13 @@ public class Receta {
     private String instrucciones;
     private int tiempoCoccion;
     private String fotografiaUrl;
+
+    public Receta(){}
+
+    public Receta(String nombre, String paisOrigen, String tipoCocina, String dificultad) {
+        this.nombre = nombre;
+        this.paisOrigen = paisOrigen;
+        this.tipoCocina = tipoCocina;
+        this.dificultad = dificultad;
+    }
 }

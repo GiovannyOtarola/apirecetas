@@ -13,6 +13,10 @@ public class RecetaService {
     @Autowired
     private RecetaRepository recetaRepository;
 
+
+    public List<Receta> listarRecetas(){
+        return (List<Receta>) recetaRepository.findAll();
+    }
     public List<Map<String, Object>> getRecetasRecientes() {
         return recetaRepository.findRecetasRecientes()
                 .stream()
