@@ -32,6 +32,7 @@ public class PrivateController {
 
     @GetMapping("/recetas/{id}/detalle")
     public Map<String, Object> getDetalleReceta(@PathVariable Long id) {
+
         return recetaService.detalleReceta(id);
     }
 }

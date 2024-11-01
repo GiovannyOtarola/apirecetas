@@ -20,7 +20,7 @@ public class LoginController {
     private MyUserDetailsService userDetailsService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(
+    public ResponseEntity<String> login(
             @RequestParam("user") String username,
             @RequestParam("encryptedPass") String encryptedPass) {
 
@@ -31,12 +31,12 @@ public class LoginController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!userDetails.getPassword().equals(encryptedPass)) {
-            return ResponseEntity.ok(new ApiResponse("Algunos de los valores son incorrectos",false));
+            return ResponseEntity.ok("Token invalido");
         }
 
         String token = jwtAuthtenticationConfig.getJWTToken(username);
 
-        return ResponseEntity.ok(new ApiResponse(token,true));
+        return ResponseEntity.ok(token);
 
     }
 
