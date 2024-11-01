@@ -2,6 +2,8 @@ package com.example.apirecetas.services;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.example.apirecetas.repository.RecetaRepository;
@@ -48,5 +50,21 @@ public class RecetaService {
 
     public Receta getRecetaById(Long id) {
         return recetaRepository.findById(id).orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+    }
+
+    // Método para obtener los detalles específicos de una receta
+    public Map<String, Object> detalleReceta(Long id) {
+        Receta receta = recetaRepository.findById(id)
+                            .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+        
+        // Crear un mapa con los detalles necesarios
+        Map<String, Object> detalles = new HashMap<>();
+        detalles.put("dificultad", receta.getDificultad());
+        detalles.put("ingredientes", receta.getIngredientes());
+        detalles.put("instrucciones", receta.getInstrucciones());
+        detalles.put("tiempoCoccion", receta.getTiempoCoccion());
+        detalles.put("fotografiaUrl", receta.getFotografiaUrl());
+
+        return detalles;
     }
 }
