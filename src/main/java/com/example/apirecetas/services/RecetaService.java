@@ -45,7 +45,7 @@ public class RecetaService {
 
     public List<Receta> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
         return recetaRepository.findByNombreAndTipoCocinaAndPaisOrigenAndDificultad(
-            nombre, tipoCocina, paisOrigen, dificultad);
+                validateIsNull(nombre), validateIsNull(tipoCocina), validateIsNull(paisOrigen), validateIsNull(dificultad));
     }
 
     public Receta getRecetaById(Long id) {
@@ -66,5 +66,14 @@ public class RecetaService {
         detalles.put("fotografiaUrl", receta.getFotografiaUrl());
 
         return detalles;
+    }
+
+
+    private String validateIsNull(String value){
+        if(value.isBlank()||value.isEmpty()){
+            return null;
+        }else {
+            return value;
+        }
     }
 }
