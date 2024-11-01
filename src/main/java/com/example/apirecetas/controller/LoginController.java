@@ -1,8 +1,10 @@
 package com.example.apirecetas.controller;
 
+import com.example.apirecetas.model.ApiResponse;
 import com.example.apirecetas.security.JWTAuthtenticationConfig;
 import com.example.apirecetas.services.impl.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +20,7 @@ public class LoginController {
     private MyUserDetailsService userDetailsService;
 
     @PostMapping("/login")
-    public String login(
+    public ResponseEntity<ApiResponse> login(
             @RequestParam("user") String username,
             @RequestParam("encryptedPass") String encryptedPass) {
 
@@ -29,12 +31,12 @@ public class LoginController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!userDetails.getPassword().equals(encryptedPass)) {
-            throw new RuntimeException("Invalid login");
+            return ResponseEntity.ok(new ApiResponse("Algunos de los valores son incorrectos",false));
         }
 
         String token = jwtAuthtenticationConfig.getJWTToken(username);
 
-        return token;
+        return ResponseEntity.ok(new ApiResponse(token,true));
 
     }
 
