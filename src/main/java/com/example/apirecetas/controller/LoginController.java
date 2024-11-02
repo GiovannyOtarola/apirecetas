@@ -24,14 +24,12 @@ public class LoginController {
             @RequestParam("user") String username,
             @RequestParam("encryptedPass") String encryptedPass) {
 
-        /**
-         * En el ejemplo no se realiza la correcta validación del usuario
-         */
+
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!userDetails.getPassword().equals(encryptedPass)) {
-            return ResponseEntity.ok("Token invalido");
+            return ResponseEntity.badRequest().body("Usuario y/o clave incorrecto");
         }
 
         String token = jwtAuthtenticationConfig.getJWTToken(username);
