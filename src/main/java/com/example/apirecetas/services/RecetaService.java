@@ -17,6 +17,7 @@ public class RecetaService {
 
 
     public List<Receta> listarRecetas(){
+
         return (List<Receta>) recetaRepository.findAll();
     }
     public List<Map<String, Object>> getRecetasRecientes() {
@@ -43,10 +44,17 @@ public class RecetaService {
         );
     }
 
-    public List<Receta> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
-        return recetaRepository.findByNombreAndTipoCocinaAndPaisOrigenAndDificultad(
-                validateIsNull(nombre), validateIsNull(tipoCocina), validateIsNull(paisOrigen), validateIsNull(dificultad));
-    }
+//    public List<Receta> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
+//        return recetaRepository.findByNombreAndTipoCocinaAndPaisOrigenAndDificultad(
+//                nombre, tipoCocina, paisOrigen, dificultad);
+//    }
+public List<Map<String, Object>> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
+    return recetaRepository.findRecetasByFields(
+                    nombre, tipoCocina, paisOrigen, dificultad)
+                    .stream()
+                    .map(this::convertToMap)
+                    .collect(Collectors.toList());
+}
 
     public Receta getRecetaById(Long id) {
         return recetaRepository.findById(id).orElseThrow(() -> new RuntimeException("Receta no encontrada"));

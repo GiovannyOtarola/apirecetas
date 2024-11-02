@@ -34,7 +34,7 @@ public class PublicController {
     }
 
     @GetMapping("/buscar")
-    public List<Receta> buscarRecetas(
+    public List<Map<String, Object>> buscarRecetas(
             @RequestParam(value = "nombre", required = false) String nombre,
             @RequestParam(value = "tipoCocina", required = false) String tipoCocina,
             @RequestParam(value = "paisOrigen", required = false) String paisOrigen,
