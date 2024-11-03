@@ -77,11 +77,4 @@ public List<Map<String, Object>> buscarRecetas(String nombre, String tipoCocina,
     }
 
 
-    private String validateIsNull(String value){
-        if(value.isBlank()||value.isEmpty()){
-            return null;
-        }else {
-            return value;
-        }
-    }
 }
