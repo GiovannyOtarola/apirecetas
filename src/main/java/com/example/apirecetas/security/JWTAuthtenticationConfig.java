@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
-import static com.example.apirecetas.contants.Constants.SUPER_SECRET_KEY;
+import static com.example.apirecetas.contants.Constants.KEY;
 import static com.example.apirecetas.contants.Constants.getSigningKey;
 
 
@@ -32,7 +32,7 @@ public class JWTAuthtenticationConfig {
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1440))
-                .signWith(getSigningKey(SUPER_SECRET_KEY))
+                .signWith(getSigningKey(KEY))
                 .compact();
 
         return "Bearer " + token;
