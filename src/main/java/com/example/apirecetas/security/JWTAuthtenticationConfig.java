@@ -28,7 +28,7 @@ public class JWTAuthtenticationConfig {
                 .toList());
 
         String token = Jwts.builder()
-                .claims(claims) // Usar setClaims en lugar de claims() y add()
+                .claims(claims) 
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1440))
