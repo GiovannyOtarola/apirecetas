@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import static com.example.apirecetas.contants.Constants.*;
 
@@ -32,45 +31,30 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     }
 
-//    private void setAuthentication(Claims claims) {
-//        List<String> authorities = (List<String>) claims.get("authorities"); // Casting a List<String>
-//
-//        UsernamePasswordAuthenticationToken auth =
-//                new UsernamePasswordAuthenticationToken(
-//                        claims.getSubject(),
-//                        null,
-//                        authorities.stream()
-//                                .map(SimpleGrantedAuthority::new)
-//                                .collect(Collectors.toList())
-//                );
-//
-//        SecurityContextHolder.getContext().setAuthentication(auth);
-//    }
 
     private void setAuthentication(Claims claims) {
 
+        @SuppressWarnings("unchecked")
         List<String> authorities =(List<String>) claims.get("authorities");
 
         UsernamePasswordAuthenticationToken auth =
                 new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
-                        authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+                    authorities.stream().map(SimpleGrantedAuthority::new).toList());
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
     }
 
 
-    private boolean isJWTValid(HttpServletRequest request, HttpServletResponse res) {
+    private boolean isJWTValid(HttpServletRequest request) {
         String authenticationHeader = request.getHeader(HEADER_AUTHORIZACION_KEY);
-        if (authenticationHeader == null || !authenticationHeader.startsWith(TOKEN_BEARER_PREFIX))
-            return false;
-        return true;
+        return authenticationHeader != null && authenticationHeader.startsWith(TOKEN_BEARER_PREFIX);
     }
 
     @Override
-    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,  HttpServletResponse response,  FilterChain filterChain) throws ServletException, IOException {
         try {
-            if (isJWTValid(request, response)) {
+            if (isJWTValid(request)) {
                 Claims claims = setSigningKey(request);
                 if (claims.get("authorities") != null) {
                     setAuthentication(claims);
@@ -84,7 +68,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-            return;
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import com.example.apirecetas.repository.RecetaRepository;
 import com.example.apirecetas.model.Receta;
 
@@ -27,14 +27,14 @@ public class RecetaService {
         return recetaRepository.findRecetasRecientes()
                 .stream()
                 .map(this::convertToMap)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Map<String, Object>> getRecetasPopulares() {
         return recetaRepository.findRecetasPopulares()
                 .stream()
                 .map(this::convertToMap)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Map<String, Object> convertToMap(Object[] recetaData) {
@@ -47,17 +47,13 @@ public class RecetaService {
         );
     }
 
-//    public List<Receta> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
-//        return recetaRepository.findByNombreAndTipoCocinaAndPaisOrigenAndDificultad(
-//                nombre, tipoCocina, paisOrigen, dificultad);
-//    }
-public List<Map<String, Object>> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
-    return recetaRepository.findRecetasByFields(
-                    nombre, tipoCocina, paisOrigen, dificultad)
-                    .stream()
-                    .map(this::convertToMap)
-                    .collect(Collectors.toList());
-}
+    public List<Map<String, Object>> buscarRecetas(String nombre, String tipoCocina, String paisOrigen, String dificultad) {
+        return recetaRepository.findRecetasByFields(
+                        nombre, tipoCocina, paisOrigen, dificultad)
+                        .stream()
+                        .map(this::convertToMap)
+                        .toList();
+    }
 
     public Receta getRecetaById(Long id) {
         return recetaRepository.findById(id).orElseThrow(() -> new RuntimeException("Receta no encontrada"));

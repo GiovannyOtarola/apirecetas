@@ -28,16 +28,6 @@ public interface RecetaRepository extends CrudRepository<Receta, Long> {
             @Param("dificultad") String dificultad
     );
 
-//    @Query("SELECT r.id, r.nombre, r.paisOrigen, r.tipoCocina, r.dificultad FROM Receta r " +
-//            "WHERE (:nombre IS NULL OR r.nombre LIKE %:nombre%) " +
-//            "AND (:tipoCocina IS NULL OR r.tipoCocina = :tipoCocina) " +
-//            "AND (:paisOrigen IS NULL OR r.paisOrigen = :paisOrigen) " +
-//            "AND (:dificultad IS NULL OR r.dificultad = :dificultad)")
-//    List<Object[]> findRecetasByFields(
-//            @Param("nombre") String nombre,
-//            @Param("tipoCocina") String tipoCocina,
-//            @Param("paisOrigen") String paisOrigen,
-//            @Param("dificultad") String dificultad);
 
     @Query("SELECT r.id, r.nombre, r.paisOrigen, r.tipoCocina, r.dificultad FROM Receta r " +
             "WHERE (:nombre IS NULL OR :nombre = '' OR r.nombre LIKE %:nombre%) " +

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,8 +25,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
         http
-                .csrf((csrf) -> csrf
-                        .disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests( authz -> authz
                         .requestMatchers(HttpMethod.POST,Constants.LOGIN_URL).permitAll()
                         .requestMatchers("/public/**").permitAll()
