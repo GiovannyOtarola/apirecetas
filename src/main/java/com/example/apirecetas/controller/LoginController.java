@@ -1,9 +1,8 @@
 package com.example.apirecetas.controller;
 
-import com.example.apirecetas.model.ApiResponse;
+
 import com.example.apirecetas.security.JWTAuthtenticationConfig;
 import com.example.apirecetas.services.impl.MyUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    @Autowired
-    JWTAuthtenticationConfig jwtAuthtenticationConfig;
+    private final JWTAuthtenticationConfig jwtAuthtenticationConfig;
+    private final MyUserDetailsService userDetailsService;
 
-    @Autowired
-    private MyUserDetailsService userDetailsService;
+    
+    
+    public LoginController(JWTAuthtenticationConfig jwtAuthtenticationConfig, MyUserDetailsService userDetailsService) {
+        this.jwtAuthtenticationConfig = jwtAuthtenticationConfig;
+        this.userDetailsService = userDetailsService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(

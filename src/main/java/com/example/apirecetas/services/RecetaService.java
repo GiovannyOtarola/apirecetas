@@ -1,7 +1,7 @@
 package com.example.apirecetas.services;
 import org.springframework.stereotype.Service;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +12,12 @@ import com.example.apirecetas.model.Receta;
 @Service
 public class RecetaService {
 
-    @Autowired
-    private RecetaRepository recetaRepository;
+    private final RecetaRepository recetaRepository;
 
+   
+    public RecetaService(RecetaRepository recetaRepository) {
+        this.recetaRepository = recetaRepository;
+    }
 
     public List<Receta> listarRecetas(){
 

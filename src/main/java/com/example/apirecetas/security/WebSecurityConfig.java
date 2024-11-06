@@ -1,7 +1,6 @@
 package com.example.apirecetas.security;
 
 import com.example.apirecetas.contants.Constants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,8 +13,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class WebSecurityConfig {
 
-    @Autowired
-    JWTAuthorizationFilter jwtAuthorizationFilter;
+        private final JWTAuthorizationFilter jwtAuthorizationFilter;
+
+        
+        public WebSecurityConfig(JWTAuthorizationFilter jwtAuthorizationFilter) {
+            this.jwtAuthorizationFilter = jwtAuthorizationFilter;
+        }
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {

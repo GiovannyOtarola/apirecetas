@@ -2,7 +2,6 @@ package com.example.apirecetas.controller;
 
 import java.util.HashMap;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +14,12 @@ import java.util.Map;
 
 public class PublicController {
 
-    @Autowired
-    private RecetaService recetaService;
+    private final RecetaService recetaService;
+
+   
+    public PublicController(RecetaService recetaService) {
+        this.recetaService = recetaService;
+    }
 
     @GetMapping("/home")
     public Map<String, Object> getHomePage() {

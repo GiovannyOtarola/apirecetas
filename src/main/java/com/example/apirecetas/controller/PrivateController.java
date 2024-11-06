@@ -1,7 +1,5 @@
 package com.example.apirecetas.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +15,12 @@ import java.util.Map;
 @RequestMapping("/private")
 public class PrivateController {
     
-     @Autowired
-    private RecetaService recetaService;
+    private final RecetaService recetaService;
+
+    
+    public PrivateController(RecetaService recetaService) {
+        this.recetaService = recetaService;
+    }
 
     @GetMapping("/recetas")
     public List<Receta> listarRecetas() {

@@ -2,7 +2,6 @@ package com.example.apirecetas.services.impl;
 
 import com.example.apirecetas.model.User;
 import com.example.apirecetas.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,8 +21,11 @@ public class MyUserDetailsService implements UserDetailsService {
     Logger logger
             = LoggerFactory.getLogger(MyUserDetailsService.class);
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public MyUserDetailsService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
 
 
     @Override
