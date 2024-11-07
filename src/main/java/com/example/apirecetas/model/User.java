@@ -2,8 +2,10 @@ package com.example.apirecetas.model;
 
 
 import java.util.Collection;
+import java.util.Collections;
 
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
@@ -20,6 +22,8 @@ public class User implements UserDetails {
 
     private String username;
 
+    private String name;
+
     private String email;
 
     private String password;
@@ -30,6 +34,14 @@ public class User implements UserDetails {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUsername() {
@@ -57,8 +69,9 @@ public class User implements UserDetails {
     }
 
     @Override
-    public Collection getAuthorities() {
-        throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Por defecto asignamos el rol de usuario
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
