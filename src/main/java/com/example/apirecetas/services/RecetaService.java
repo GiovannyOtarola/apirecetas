@@ -75,8 +75,8 @@ public class RecetaService {
         return detalles;
     }
 
-    public Receta crearReceta(Receta receta){
-        return recetaRepository.save(receta);
+    public void crearReceta(Receta receta){
+        recetaRepository.save(receta);
     }
 
 }
