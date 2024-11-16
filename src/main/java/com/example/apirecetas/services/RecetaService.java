@@ -1,10 +1,16 @@
 package com.example.apirecetas.services;
+import com.example.apirecetas.model.ComentarioValoracion;
+import com.example.apirecetas.model.ComentarioValoracionView;
+import com.example.apirecetas.repository.CometarioValoracionRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.example.apirecetas.repository.RecetaRepository;
 import com.example.apirecetas.model.Receta;
@@ -13,10 +19,12 @@ import com.example.apirecetas.model.Receta;
 public class RecetaService {
 
     private final RecetaRepository recetaRepository;
+    private final CometarioValoracionRepository cometarioValoracionRepository;
 
    
-    public RecetaService(RecetaRepository recetaRepository) {
+    public RecetaService(RecetaRepository recetaRepository,CometarioValoracionRepository cometarioValoracionRepository) {
         this.recetaRepository = recetaRepository;
+        this.cometarioValoracionRepository = cometarioValoracionRepository;
     }
 
     public List<Receta> listarRecetas(){
@@ -78,5 +86,32 @@ public class RecetaService {
     public void crearReceta(Receta receta){
         recetaRepository.save(receta);
     }
+
+    public List<ComentarioValoracion> listarComentarioValoracion(){
+
+        return (List<ComentarioValoracion>) cometarioValoracionRepository.findAll();
+    }
+
+
+    public List<ComentarioValoracionView> getComentarioValoracionByRecetaId(Long id) {
+        List<ComentarioValoracionView> comentarios = cometarioValoracionRepository.findComentarioValoracionByRecetaId(id);
+        if (comentarios.isEmpty()) {
+            throw new RuntimeException("Comentarios y valoraciones no encontrados para la receta con id: " + id);
+        }
+        return comentarios;
+    }
+
+
+
+
+    public ComentarioValoracion guardarComentarioValoracion(ComentarioValoracion body) {
+
+        return cometarioValoracionRepository.save(body);
+    }
+
+
+
+
+
 
 }
