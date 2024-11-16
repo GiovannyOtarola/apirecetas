@@ -74,6 +74,7 @@ public class RecetaService {
         
         // Crear un mapa con los detalles necesarios
         Map<String, Object> detalles = new HashMap<>();
+        detalles.put("id", receta.getId());
         detalles.put("dificultad", receta.getDificultad());
         detalles.put("ingredientes", receta.getIngredientes());
         detalles.put("instrucciones", receta.getInstrucciones());
