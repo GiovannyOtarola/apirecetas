@@ -62,49 +62,62 @@ public class PrivateController {
 
 
     @PostMapping("/recetas/{id}/guardarComentarioValoracion")
-public ResponseEntity<ComentarioValoracionView> guardarComentarioValoracion(
-        @PathVariable Long id, 
-        @RequestBody ComentarioValoracion comentario) {
+    public ResponseEntity<ComentarioValoracionView> guardarComentarioValoracion(
+            @PathVariable Long id, 
+            @RequestBody ComentarioValoracion comentario) {
 
-    // Buscar la receta por id
-    Receta receta = recetaService.getRecetaById(id);
+        // Validar el cuerpo de la solicitud
+        if (comentario == null || comentario.getComentario() == null || comentario.getComentario().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
-    if (receta == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Si no se encuentra la receta, devolver error 404
+        if (comentario.getValoracion() == null || comentario.getValoracion() < 1 || comentario.getValoracion() > 5) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        // Buscar la receta por id
+        Receta receta = recetaService.getRecetaById(id);
+        if (receta == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Si no se encuentra la receta, devolver error 404
+        }
+
+        // Asociar la receta al comentario
+        comentario.setReceta(receta);
+
+        try {
+            // Guardar el comentario y la valoración
+            ComentarioValoracion savedComentario = recetaService.guardarComentarioValoracion(comentario);
+
+            // Crear una vista simplificada con la interfaz ComentarioValoracionView
+            ComentarioValoracionView comentarioView = new ComentarioValoracionView() {
+                @Override
+                public Long getId() {
+                    return savedComentario.getId();
+                }
+
+                @Override
+                public String getComentario() {
+                    return savedComentario.getComentario();
+                }
+
+                @Override
+                public Long getValoracion() {
+                    return savedComentario.getValoracion();
+                }
+
+                @Override
+                public Long getRecetaId() {
+                    return savedComentario.getReceta().getId();
+                }
+            };
+
+            // Retornar el comentario como una vista
+            return ResponseEntity.status(HttpStatus.CREATED).body(comentarioView);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // O puedes devolver un mensaje de error
+        }
     }
-
-    // Asociar la receta al comentario
-    comentario.setReceta(receta);
-
-    // Guardar el comentario y la valoración
-    ComentarioValoracion savedComentario = recetaService.guardarComentarioValoracion(comentario);
-
-    // Crear una vista simplificada con la interfaz ComentarioValoracionView
-    ComentarioValoracionView comentarioView = new ComentarioValoracionView() {
-        @Override
-        public Long getId() {
-            return savedComentario.getId();
-        }
-
-        @Override
-        public String getComentario() {
-            return savedComentario.getComentario();
-        }
-
-        @Override
-        public Long getValoracion() {
-            return savedComentario.getValoracion();
-        }
-
-        @Override
-        public Long getRecetaId() {
-            return savedComentario.getReceta().getId();
-        }
-    };
-
-    // Retornar el comentario como una vista
-    return ResponseEntity.ok(comentarioView);
-}
 
     @PostMapping("/recetas/{id}/agregarVideo")
     public ResponseEntity<String> agregarVideo(@PathVariable Long id, @RequestParam String videoUrl) {
