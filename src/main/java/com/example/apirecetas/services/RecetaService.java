@@ -19,7 +19,7 @@ public class RecetaService {
 
     private final RecetaRepository recetaRepository;
     private final CometarioValoracionRepository cometarioValoracionRepository;
-
+    private static final String RECETA_NO_ENCONTRADA = "Receta no encontrada";
    
     public RecetaService(RecetaRepository recetaRepository,CometarioValoracionRepository cometarioValoracionRepository) {
         this.recetaRepository = recetaRepository;
@@ -63,13 +63,13 @@ public class RecetaService {
     }
 
     public Receta getRecetaById(Long id) {
-        return recetaRepository.findById(id).orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+        return recetaRepository.findById(id).orElseThrow(() -> new RuntimeException(RECETA_NO_ENCONTRADA));
     }
 
     // Método para obtener los detalles específicos de una receta
     public Map<String, Object> detalleReceta(Long id) {
         Receta receta = recetaRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+                            .orElseThrow(() -> new RuntimeException(RECETA_NO_ENCONTRADA));
         
         // Crear un mapa con los detalles necesarios
         Map<String, Object> detalles = new HashMap<>();
@@ -97,7 +97,7 @@ public class RecetaService {
     public List<ComentarioValoracionView> getComentarioValoracionByRecetaId(Long id) {
         List<ComentarioValoracionView> comentarios = cometarioValoracionRepository.findComentarioValoracionByRecetaId(id);
         if (comentarios.isEmpty()) {
-            throw new RuntimeException("Comentarios y valoraciones no encontrados para la receta con id: " + id);
+            throw new IllegalArgumentException("Comentarios y valoraciones no encontrados para la receta con id: " + id);
         }
         return comentarios;
     }
@@ -121,7 +121,7 @@ public class RecetaService {
 
     public void agregarVideo(Long recetaId, String videoUrl) {
         Receta receta = recetaRepository.findById(recetaId)
-                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+                .orElseThrow(() -> new RuntimeException(RECETA_NO_ENCONTRADA));
         receta.setUrlVideo(videoUrl);
         recetaRepository.save(receta);
     }
