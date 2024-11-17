@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.apirecetas.model.Receta;
 import com.example.apirecetas.services.RecetaService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,11 @@ public class PrivateController {
 
     @GetMapping("/receta/{id}/comentariosValoracion")
     public List<ComentarioValoracionView> listarCometariosValoracion(@PathVariable Long id) {
-        return  recetaService.getComentarioValoracionByRecetaId(id);
+        try {
+            return  recetaService.getComentarioValoracionByRecetaId(id);
+        }catch (Exception ex){
+            return new ArrayList<>();
+        }
     }
 
 
