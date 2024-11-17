@@ -2,15 +2,14 @@ package com.example.apirecetas.services;
 import com.example.apirecetas.model.ComentarioValoracion;
 import com.example.apirecetas.model.ComentarioValoracionView;
 import com.example.apirecetas.repository.CometarioValoracionRepository;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
 
 import com.example.apirecetas.repository.RecetaRepository;
 import com.example.apirecetas.model.Receta;
@@ -80,6 +79,7 @@ public class RecetaService {
         detalles.put("instrucciones", receta.getInstrucciones());
         detalles.put("tiempoCoccion", receta.getTiempoCoccion());
         detalles.put("fotografiaUrl", receta.getFotografiaUrl());
+        detalles.put("urlVideo", receta.getUrlVideo());
 
         return detalles;
     }
@@ -106,11 +106,25 @@ public class RecetaService {
 
 
     public ComentarioValoracion guardarComentarioValoracion(ComentarioValoracion body) {
-
+        if (body.getComentario() == null || body.getComentario().isEmpty()) {
+            throw new IllegalArgumentException("El comentario no puede estar vacío.");
+        }
+    
+        if (body.getValoracion() == null || body.getValoracion() < 1 || body.getValoracion() > 5) {
+            throw new IllegalArgumentException("La valoración debe estar entre 1 y 5.");
+        }
+    
         return cometarioValoracionRepository.save(body);
     }
 
+    
 
+    public void agregarVideo(Long recetaId, String videoUrl) {
+        Receta receta = recetaRepository.findById(recetaId)
+                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+        receta.setUrlVideo(videoUrl);
+        recetaRepository.save(receta);
+    }
 
 
 
