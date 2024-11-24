@@ -28,7 +28,7 @@ public class User implements UserDetails {
 
     private String password;
 
-    
+    private String role;
 
     public User(String username, String name, String email, String password) {
         
@@ -78,11 +78,20 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Por defecto asignamos el rol de usuario
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        // Retorna el rol basado en el campo `role`
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
+    
 
     @Override
     public boolean isAccountNonExpired() {
@@ -106,6 +115,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         throw new UnsupportedOperationException("Unimplemented method 'isEnabled'");
     }
+
+    
 
 
 }

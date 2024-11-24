@@ -12,12 +12,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.apirecetas.controller.LoginController;
-
+import com.example.apirecetas.model.User;
 import com.example.apirecetas.security.JWTAuthtenticationConfig;
 
 import com.example.apirecetas.services.impl.MyUserDetailsService;
@@ -42,23 +43,31 @@ public class LoginControllerTest {
 
     @Test
     void testLogin_Success() {
+        // Datos de prueba
         String username = "testuser";
         String password = "plaintextpassword";
-        String encryptedPassword = "$2a$10$encryptedpassword";
+        String encryptedPassword = "$2a$10$encryptedpassword";  // Simulación de una contraseña cifrada
         String token = "mocked.jwt.token";
 
-        UserDetails userDetails = mock(UserDetails.class);
+        // Mock de UserDetails
+        User mockUser = mock(User.class);  // Crea un mock de la clase User (que implementa UserDetails)
         
-        when(userDetails.getPassword()).thenReturn(encryptedPassword);
+        // Simula el comportamiento del mockUser
+        when(mockUser.getPassword()).thenReturn(encryptedPassword);  // Simula que el password del usuario es el cifrado
 
-        when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
-        when(passwordEncoder.matches(password, encryptedPassword)).thenReturn(true);
+        // Mock del servicio userDetailsService
+        when(userDetailsService.loadUserByUsername(username)).thenReturn(mockUser);
         
-        
-        when(jwtAuthtenticationConfig.getJWTToken(username)).thenReturn(token);
+        // Mock del passwordEncoder
+        when(passwordEncoder.matches(password, encryptedPassword)).thenReturn(true);  // Simula la verificación de la contraseña
 
+        // Mock de la generación del token
+        when(jwtAuthtenticationConfig.getJWTToken(mockUser)).thenReturn(token);  // Genera el token a partir del mockUser
+
+        // Ejecutar el método login
         ResponseEntity<String> response = loginController.login(username, password);
 
+        // Verificar los resultados
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(token, response.getBody());
     }

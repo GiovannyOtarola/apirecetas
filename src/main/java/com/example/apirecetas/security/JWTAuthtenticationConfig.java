@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import com.example.apirecetas.model.User;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +20,13 @@ import static com.example.apirecetas.contants.Constants.getSigningKey;
 @Configuration
 public class JWTAuthtenticationConfig {
 
-    public String getJWTToken(String username) {
-        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_USER");
+        public String getJWTToken(User user) {
+                // Obtener el rol del usuario (por ejemplo, "ROLE_ADMIN" o "ROLE_USER")
+                String role = user.getRole(); 
+        
+                // Crear la lista de autoridades basadas en el rol
+                List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                        .commaSeparatedStringToAuthorityList("ROLE_" + role.toUpperCase());
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("authorities", grantedAuthorities.stream()
@@ -29,7 +35,7 @@ public class JWTAuthtenticationConfig {
 
         String token = Jwts.builder()
                 .claims(claims) 
-                .subject(username)
+                .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1440))
                 .signWith(getSigningKey(KEY))
