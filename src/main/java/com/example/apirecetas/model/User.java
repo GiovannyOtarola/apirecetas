@@ -28,6 +28,16 @@ public class User implements UserDetails {
 
     private String password;
 
+    
+
+    public User(String username, String name, String email, String password) {
+        
+    }
+
+    public User() {
+        
+    }
+
     public Integer getId() {
         return id;
     }
