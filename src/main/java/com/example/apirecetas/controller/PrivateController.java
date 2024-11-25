@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.apirecetas.model.Receta;
+import com.example.apirecetas.model.User;
 import com.example.apirecetas.services.RecetaService;
+import com.example.apirecetas.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,11 @@ import java.util.Map;
 public class PrivateController {
     
     private final RecetaService recetaService;
-
+    private final UserService userService;
     
-    public PrivateController(RecetaService recetaService) {
+    public PrivateController(RecetaService recetaService, UserService userService) {
         this.recetaService = recetaService;
+        this.userService = userService;
     }
 
     @GetMapping("/recetas")
@@ -133,5 +136,33 @@ public class PrivateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al agregar el video: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        try {
+            List<User> users = userService.getAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(List.of()); 
+        }
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateUser (@PathVariable Integer id, @RequestBody User user) {
+        // Lógica para actualizar el usuario. Asegúrate de que el ID coincida.
+        User existingUser  = userService.findById(id);
+        if (existingUser  == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        existingUser .setUsername(user.getUsername());
+        existingUser .setEmail(user.getEmail());
+        existingUser .setName(user.getName());
+        existingUser .setRole(user.getRole());
+        userService.updateUser (existingUser ); // Implementa este método en UserService
+
+        return ResponseEntity.ok(existingUser );
     }
 }

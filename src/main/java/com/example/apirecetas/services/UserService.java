@@ -1,8 +1,13 @@
 package com.example.apirecetas.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.apirecetas.model.ComentarioValoracion;
 import com.example.apirecetas.model.User;
 import com.example.apirecetas.repository.UserRepository;
 
@@ -32,4 +37,20 @@ public class UserService {
         // Guardar el usuario en la base de datos
         userRepository.save(user);
     }
+
+    public List<User> getAllUsers() {
+        return (List<User>) userRepository.findAll();
+    }
+
+    // Método para encontrar un usuario por ID
+    public User findById(Integer id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    // Método para actualizar un usuario
+    public User updateUser (User user) {
+        return userRepository.save(user);
+    }
+
+    
 }
