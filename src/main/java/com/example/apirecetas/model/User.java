@@ -93,27 +93,29 @@ public class User implements UserDetails {
     }
     
 
+    
     @Override
     public boolean isAccountNonExpired() {
-
-        throw new UnsupportedOperationException("Unimplemented method 'isAccountNonExpired'");
+        // Lógica básica: siempre retorna true (cuenta no expirada)
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-
-        throw new UnsupportedOperationException("Unimplemented method 'isAccountNonLocked'");
+        // Lógica básica: siempre retorna true (cuenta no bloqueada)
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-
-        throw new UnsupportedOperationException("Unimplemented method 'isCredentialsNonExpired'");
+        // Lógica básica: siempre retorna true (credenciales no expiradas)
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        throw new UnsupportedOperationException("Unimplemented method 'isEnabled'");
+        // Lógica básica: siempre retorna true (usuario habilitado)
+        return true;
     }
 
     
