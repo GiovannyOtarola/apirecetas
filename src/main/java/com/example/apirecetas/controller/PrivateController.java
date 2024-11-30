@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.apirecetas.model.Receta;
 import com.example.apirecetas.model.User;
+import com.example.apirecetas.model.UserDTO;
 import com.example.apirecetas.services.RecetaService;
 import com.example.apirecetas.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/private")
@@ -139,14 +141,18 @@ public class PrivateController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(List.of()); 
-        }
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<User> users = userService.getAllUsers(); 
+        List<UserDTO> userDTOs = users.stream()
+                                       .map(user -> new UserDTO(
+                                           user.getId(),
+                                           user.getUsername(),
+                                           user.getName(),
+                                           user.getEmail(),
+                                           user.getRole()
+                                       ))
+                                       .collect(Collectors.toList());
+        return ResponseEntity.ok(userDTOs);
     }
 
     @PutMapping("/users/{id}")
