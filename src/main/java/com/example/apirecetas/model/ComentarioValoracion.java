@@ -16,6 +16,8 @@ public class ComentarioValoracion {
     private String comentario;
     private Long valoracion;
 
+    private boolean aprobado;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receta_id", nullable = false)
     private Receta receta;

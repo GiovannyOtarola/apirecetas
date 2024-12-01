@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/public/registro").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/private/users").hasRole("ADMIN")
+                        .requestMatchers("/private/comentarios").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterAfter(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 

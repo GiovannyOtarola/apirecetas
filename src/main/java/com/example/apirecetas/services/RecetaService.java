@@ -14,6 +14,8 @@ import java.util.List;
 import com.example.apirecetas.repository.RecetaRepository;
 import com.example.apirecetas.model.Receta;
 
+
+
 @Service
 public class RecetaService {
 
@@ -126,7 +128,16 @@ public class RecetaService {
         recetaRepository.save(receta);
     }
 
+    public List<ComentarioValoracion> getAllComentarios() {
+        return (List<ComentarioValoracion>) cometarioValoracionRepository.findAll();
+    }
 
+    public ComentarioValoracion updateComentarios (ComentarioValoracion comentario) {
+        return cometarioValoracionRepository.save(comentario);
+    }
 
-
+    // Método para encontrar un usuario por ID
+    public ComentarioValoracion findById(long id) {
+        return cometarioValoracionRepository.findById(id).orElse(null);
+    }
 }

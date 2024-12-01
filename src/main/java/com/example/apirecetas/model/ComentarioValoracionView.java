@@ -7,4 +7,5 @@ public interface ComentarioValoracionView {
     String getComentario();
     Long getValoracion();
     Long getRecetaId();
+    
 }

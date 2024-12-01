@@ -1,6 +1,7 @@
 package com.example.apirecetas.controller;
 
 import com.example.apirecetas.model.ComentarioValoracion;
+import com.example.apirecetas.model.ComentarioValoracionDTO;
 import com.example.apirecetas.model.ComentarioValoracionView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -119,6 +120,8 @@ public class PrivateController {
                 public Long getRecetaId() {
                     return savedComentario.getReceta().getId();
                 }
+
+                
             };
 
             // Retornar el comentario como una vista
@@ -170,5 +173,36 @@ public class PrivateController {
         userService.updateUser (existingUser ); // Implementa este método en UserService
 
         return ResponseEntity.ok(existingUser );
+    }
+
+    @GetMapping("/comentarios")
+    public ResponseEntity<List<ComentarioValoracionDTO>> getAllComentarios() {
+        List<ComentarioValoracion> comentarios = recetaService.getAllComentarios(); 
+        List<ComentarioValoracionDTO> comentarioDTOs = comentarios.stream()
+                                       .map(comentario -> new ComentarioValoracionDTO(
+                                        comentario.getId(),
+                                        comentario.getComentario(),
+                                        comentario.getValoracion(),
+                                        comentario.isAprobado()
+                                       ))
+                                       .collect(Collectors.toList());
+        return ResponseEntity.ok(comentarioDTOs);
+    }
+
+    @PutMapping("/comentarios/{id}")
+    public ResponseEntity<ComentarioValoracion> updateComentario (@PathVariable Long id, @RequestBody ComentarioValoracion comentarioValoracion) {
+        
+        ComentarioValoracion existingComentario  = recetaService.findById(id);
+        if (existingComentario  == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        existingComentario .setComentario(comentarioValoracion.getComentario());
+        existingComentario .setValoracion(comentarioValoracion.getValoracion());
+        existingComentario .setAprobado(comentarioValoracion.isAprobado());
+        
+        recetaService.updateComentarios (existingComentario ); // Implementa este método en UserService
+
+        return ResponseEntity.ok(existingComentario );
     }
 }

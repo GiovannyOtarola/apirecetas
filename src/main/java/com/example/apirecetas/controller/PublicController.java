@@ -61,6 +61,8 @@ public class PublicController {
     @PostMapping("/registro")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         try {
+
+            user.setRole("USER");
             userService.registerUser(user);
             return ResponseEntity.ok("Usuario registrado con éxito.");
         } catch (Exception e) {

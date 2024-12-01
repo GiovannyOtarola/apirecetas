@@ -12,8 +12,8 @@ import java.util.List;
 
 public interface CometarioValoracionRepository extends CrudRepository<ComentarioValoracion, Long> {
 
-    @Query("SELECT c.id AS id, c.comentario AS comentario, c.valoracion AS valoracion, c.receta.id AS recetaId " +
-            "FROM ComentarioValoracion c WHERE c.receta.id = :id")
+    @Query("SELECT c.id AS id, c.comentario AS comentario, c.valoracion AS valoracion, c.receta.id AS recetaId, c.aprobado AS aprobado " +
+       "FROM ComentarioValoracion c WHERE c.receta.id = :id AND c.aprobado = true")
     List<ComentarioValoracionView> findComentarioValoracionByRecetaId(@Param("id") Long recetaId);
 
 
