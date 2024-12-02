@@ -3,8 +3,9 @@ package com.example.apirecetas;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -22,26 +23,34 @@ import org.springframework.http.ResponseEntity;
 import com.example.apirecetas.controller.PrivateController;
 
 import com.example.apirecetas.model.ComentarioValoracion;
+import com.example.apirecetas.model.ComentarioValoracionDTO;
 import com.example.apirecetas.model.ComentarioValoracionView;
 import com.example.apirecetas.model.Receta;
-
+import com.example.apirecetas.model.User;
+import com.example.apirecetas.model.UserDTO;
 import com.example.apirecetas.services.RecetaService;
+import com.example.apirecetas.services.UserService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 public class PrivateControllerTest {
-    @Mock
+   @Mock
     private RecetaService recetaService;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private PrivateController privateController;
 
-    // Datos de ejemplo
     private Receta receta;
     private ComentarioValoracion comentario;
     private ComentarioValoracionView comentarioView;
+    private User user;
+    private ComentarioValoracion comentarioActualizado;
 
     @BeforeEach
     void setUp() {
@@ -76,7 +85,21 @@ public class PrivateControllerTest {
                 return receta.getId();
             }
         };
+        comentarioActualizado = new ComentarioValoracion();
+        comentarioActualizado.setId(1L);
+        comentarioActualizado.setComentario("Comentario actualizado");
+        comentarioActualizado.setValoracion(4L);
+        comentarioActualizado.setAprobado(false);
+
+        user = new User();
+        user.setId(1);
+        user.setUsername("user1");
+        user.setName("User One");
+        user.setEmail("user1@example.com");
+        user.setRole("USER");
     }
+
+    
 
     @Test
     void testListarRecetas() {
@@ -145,25 +168,73 @@ public class PrivateControllerTest {
     }
 
     @Test
-    void testGuardarComentarioValoracion_Success() {
-        when(recetaService.getRecetaById(1L)).thenReturn(receta);
-        when(recetaService.guardarComentarioValoracion(comentario)).thenReturn(comentario);
+    void testGetAllComentarios() {
+        // Creamos una lista de ComentarioValoracion como mock
+        ComentarioValoracion comentario1 = new ComentarioValoracion();
+        comentario1.setId(1L);
+        comentario1.setComentario("Comentario 1");
+        comentario1.setValoracion(5L);
+        comentario1.setAprobado(true);
 
-        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+        ComentarioValoracion comentario2 = new ComentarioValoracion();
+        comentario2.setId(2L);
+        comentario2.setComentario("Comentario 2");
+        comentario2.setValoracion(4L);
+        comentario2.setAprobado(true);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("Muy buena receta", response.getBody().getComentario());
-        verify(recetaService).getRecetaById(1L);
-        verify(recetaService).guardarComentarioValoracion(comentario);
+        List<ComentarioValoracion> comentarios = List.of(comentario1, comentario2);
+        
+        // Simulamos que el servicio devuelve estos comentarios
+        when(recetaService.getAllComentarios()).thenReturn(comentarios);
+
+        // Llamamos al método del controlador
+        ResponseEntity<List<ComentarioValoracionDTO>> response = privateController.getAllComentarios();
+
+        // Afirmamos que la respuesta tenga código 200 (OK)
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verificamos que el cuerpo de la respuesta contiene los DTOs de los comentarios
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertEquals("Comentario 1", response.getBody().get(0).getComentario());
+        assertEquals(5L, response.getBody().get(0).getValoracion());
+
+        // Verificamos que se haya llamado al servicio para obtener los comentarios
+        verify(recetaService).getAllComentarios();
     }
 
     @Test
-    void testGuardarComentarioValoracion_InvalidRequest() {
-        ComentarioValoracion invalidComentario = new ComentarioValoracion();
-        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, invalidComentario);
+    void testUpdateComentario_Success() {
+        // Simula que el comentario existe en la base de datos
+        when(recetaService.findById(1L)).thenReturn(comentario);
+        when(recetaService.updateComentarios(any(ComentarioValoracion.class))).thenReturn(comentarioActualizado);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verifyNoInteractions(recetaService);
+        // Llamamos al método del controlador
+        ResponseEntity<ComentarioValoracion> response = privateController.updateComentario(1L, comentarioActualizado);
+
+        // Verificamos que la respuesta sea 200 OK
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Comentario actualizado", response.getBody().getComentario());
+        assertEquals(4L, response.getBody().getValoracion());
+        assertFalse(response.getBody().isAprobado());
+
+        // Verificamos que se haya llamado al servicio para actualizar el comentario
+        verify(recetaService).updateComentarios(any(ComentarioValoracion.class));
+    }
+
+    @Test
+    void testUpdateComentario_NotFound() {
+        // Simula que el comentario no existe en la base de datos
+        when(recetaService.findById(1L)).thenReturn(null);
+
+        // Llamamos al método del controlador
+        ResponseEntity<ComentarioValoracion> response = privateController.updateComentario(1L, comentarioActualizado);
+
+        // Verificamos que la respuesta sea 404 Not Found
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        // Verificamos que no se haya llamado al servicio para actualizar el comentario
+        verify(recetaService, times(0)).updateComentarios(any(ComentarioValoracion.class));
     }
 
     @Test
@@ -187,6 +258,45 @@ public class PrivateControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("Error al agregar el video: Error al agregar el video", response.getBody());
         verify(recetaService).agregarVideo(1L, "http://video.url");
+    }
+
+    @Test
+    void testGetAllUsers() {
+        when(userService.getAllUsers()).thenReturn(List.of(user));
+
+        ResponseEntity<List<UserDTO>> response = privateController.getAllUsers();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("user1", response.getBody().get(0).getUsername());
+    }
+
+    @Test
+    void testUpdateUser() {
+        when(userService.findById(1)).thenReturn(user);
+        when(userService.updateUser(any(User.class))).thenReturn(user);
+
+        ResponseEntity<User> response = privateController.updateUser(1, user);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("user1", response.getBody().getUsername());
+        verify(userService).updateUser(any(User.class));
+    }
+
+   @Test
+    void testUpdateUser_NotFound() {
+        // Simula que el método findById devuelve null, indicando que el usuario no se encuentra
+        when(userService.findById(1)).thenReturn(null);
+
+        // Llamamos al método updateUser del controlador
+        ResponseEntity<User> response = privateController.updateUser(1, user);
+
+        // Afirmamos que el código de estado de la respuesta es 404 (No Encontrado)
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        // Verificamos que no se haya hecho ninguna otra interacción con userService después de la llamada
+        verify(userService).findById(1); // Asegúrate de que findById fue llamado
+        verifyNoMoreInteractions(userService); // Verifica que no haya más interacciones con el mock
     }
 
 }
