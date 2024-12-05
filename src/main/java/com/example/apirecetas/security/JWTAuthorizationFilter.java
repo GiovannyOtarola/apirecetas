@@ -18,7 +18,7 @@ import static com.example.apirecetas.contants.Constants.*;
 @Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-    private Claims setSigningKey(HttpServletRequest request) {
+    public Claims setSigningKey(HttpServletRequest request) {
         String jwtToken = request.
                 getHeader(HEADER_AUTHORIZACION_KEY).
                 replace(TOKEN_BEARER_PREFIX, "");
@@ -32,7 +32,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     }
 
 
-    private void setAuthentication(Claims claims) {
+    public void setAuthentication(Claims claims) {
 
         @SuppressWarnings("unchecked")
         List<String> authorities =(List<String>) claims.get("authorities");
@@ -46,13 +46,13 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     }
 
 
-    private boolean isJWTValid(HttpServletRequest request) {
+    public boolean isJWTValid(HttpServletRequest request) {
         String authenticationHeader = request.getHeader(HEADER_AUTHORIZACION_KEY);
         return authenticationHeader != null && authenticationHeader.startsWith(TOKEN_BEARER_PREFIX);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,  HttpServletResponse response,  FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(HttpServletRequest request,  HttpServletResponse response,  FilterChain filterChain) throws ServletException, IOException {
         try {
             if (isJWTValid(request)) {
                 Claims claims = setSigningKey(request);

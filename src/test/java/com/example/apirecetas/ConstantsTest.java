@@ -6,6 +6,7 @@ import com.example.apirecetas.contants.Constants;
 
 import io.jsonwebtoken.security.WeakKeyException;
 
+import java.lang.reflect.Constructor;
 import java.security.Key;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,5 +49,29 @@ public class ConstantsTest {
         assertThrows(WeakKeyException.class, () -> {
             Constants.getSigningKey(shortSecret);
         });
+    }
+
+    @Test
+    void testPrivateConstructor() throws Exception {
+        // Use reflection to access the private constructor
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        
+        // Make the constructor accessible
+        constructor.setAccessible(true);
+        
+        // Try to invoke the constructor and catch the InvocationTargetException
+        try {
+            constructor.newInstance();
+        } catch (Exception e) {
+            // Unwrap the exception and check if it's an UnsupportedOperationException
+            if (e.getCause() instanceof UnsupportedOperationException) {
+                return;  // Test passes if the cause is UnsupportedOperationException
+            } else {
+                throw e;  // Re-throw if it's not the expected exception
+            }
+        }
+        
+        // If no exception was thrown, fail the test
+        throw new AssertionError("Expected UnsupportedOperationException but got none.");
     }
 }

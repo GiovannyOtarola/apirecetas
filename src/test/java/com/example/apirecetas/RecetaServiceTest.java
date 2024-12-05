@@ -29,9 +29,11 @@ import com.example.apirecetas.services.RecetaService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+
 @ExtendWith(MockitoExtension.class)
 public class RecetaServiceTest {
-     @Mock
+
+    @Mock
     private RecetaRepository recetaRepository;
 
     @Mock
@@ -69,81 +71,59 @@ public class RecetaServiceTest {
 
     @Test
     void testGetRecetasRecientes() {
-        // Crear un arreglo de objetos para simular los datos de la receta
         Object[] recetaData = {1L, "Paella", "España", "Mediterránea", "Media"};
-        
-        // Crear una lista de Object[] para que coincida con el tipo esperado
         List<Object[]> mockResult = new ArrayList<>();
         mockResult.add(recetaData);
 
-        // Simular la llamada al repositorio
         when(recetaRepository.findRecetasRecientes()).thenReturn(mockResult);
 
-        // Llamada al servicio
         List<Map<String, Object>> recientes = recetaService.getRecetasRecientes();
 
-        // Asegurarse de que la lista tenga un solo elemento y de que los valores sean correctos
         assertEquals(1, recientes.size());
         assertEquals("Paella", recientes.get(0).get("nombre"));
         assertEquals("España", recientes.get(0).get("paisOrigen"));
         assertEquals("Mediterránea", recientes.get(0).get("tipoCocina"));
         assertEquals("Media", recientes.get(0).get("dificultad"));
 
-        // Verificar que la función del repositorio fue llamada correctamente
         verify(recetaRepository).findRecetasRecientes();
     }
 
     @Test
     void testGetRecetasPopulares() {
-        // Crear un arreglo de objetos para simular los datos de la receta
         Object[] recetaData = {1L, "Paella", "España", "Mediterránea", "Media"};
-
-        // Crear una lista de Object[] para que coincida con el tipo esperado
         List<Object[]> mockResult = new ArrayList<>();
         mockResult.add(recetaData);
 
-        // Simular la llamada al repositorio
         when(recetaRepository.findRecetasPopulares()).thenReturn(mockResult);
 
-
-        // Llamada al servicio
         List<Map<String, Object>> populares = recetaService.getRecetasPopulares();
 
-        // Asegurarse de que la lista tenga un solo elemento y de que los valores sean correctos
         assertEquals(1, populares.size());
         assertEquals("Paella", populares.get(0).get("nombre"));
         assertEquals("España", populares.get(0).get("paisOrigen"));
         assertEquals("Mediterránea", populares.get(0).get("tipoCocina"));
         assertEquals("Media", populares.get(0).get("dificultad"));
 
-        // Verificar que la función del repositorio fue llamada correctamente
         verify(recetaRepository).findRecetasPopulares();
     }
 
     @Test
     void testBuscarRecetas() {
-        // Crear un arreglo de objetos para simular los datos de la receta
         Object[] recetaData = {1L, "Paella", "España", "Mediterránea", "Media"};
-    
-        // Crear una lista de Object[] para que coincida con el tipo esperado
         List<Object[]> mockResult = new ArrayList<>();
         mockResult.add(recetaData);
-    
-        // Simular la llamada al repositorio
+
         when(recetaRepository.findRecetasByFields("Paella", "Mediterránea", "España", "Media"))
                 .thenReturn(mockResult);
-    
-        // Llamada al servicio
+
         List<Map<String, Object>> resultados = recetaService.buscarRecetas("Paella", "Mediterránea", "España", "Media");
-    
-        // Asegurarse de que la lista tenga un solo elemento y de que los valores sean correctos
+
         assertEquals(1, resultados.size());
         assertEquals("Paella", resultados.get(0).get("nombre"));
         assertEquals("España", resultados.get(0).get("paisOrigen"));
         assertEquals("Mediterránea", resultados.get(0).get("tipoCocina"));
         assertEquals("Media", resultados.get(0).get("dificultad"));
-    
-        // Verificar que la función del repositorio fue llamada correctamente
+
         verify(recetaRepository).findRecetasByFields("Paella", "Mediterránea", "España", "Media");
     }
 
@@ -170,10 +150,39 @@ public class RecetaServiceTest {
     }
 
     @Test
+    void testDetalleReceta_Success() {
+        when(recetaRepository.findById(1L)).thenReturn(Optional.of(receta));
+
+        Map<String, Object> detalles = recetaService.detalleReceta(1L);
+
+        assertEquals(1L, detalles.get("id"));
+        assertEquals("Media", detalles.get("dificultad"));
+        assertEquals("Arroz, mariscos, especias", detalles.get("ingredientes"));
+        assertEquals("Cocinar a fuego lento.", detalles.get("instrucciones"));
+        assertEquals(45, detalles.get("tiempoCoccion"));
+        assertEquals("http://example.com/paella.jpg", detalles.get("fotografiaUrl"));
+        assertEquals(null, detalles.get("urlVideo"));  // Si no se ha asignado video aún
+
+        verify(recetaRepository).findById(1L);
+    }
+
+    @Test
+    void testDetalleReceta_NotFound() {
+        when(recetaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            recetaService.detalleReceta(1L);
+        });
+
+        assertEquals("Receta no encontrada", exception.getMessage());
+        verify(recetaRepository).findById(1L);
+    }
+
+    @Test
     void testGuardarComentarioValoracion_Success() {
         ComentarioValoracion comentario = new ComentarioValoracion();
         comentario.setComentario("Muy buena receta");
-        comentario.setValoracion((long) 5);
+        comentario.setValoracion(5L);
 
         when(cometarioValoracionRepository.save(comentario)).thenReturn(comentario);
 
@@ -187,7 +196,7 @@ public class RecetaServiceTest {
     void testGuardarComentarioValoracion_InvalidComentario() {
         ComentarioValoracion comentario = new ComentarioValoracion();
         comentario.setComentario("");
-        comentario.setValoracion((long) 5);
+        comentario.setValoracion(5L);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             recetaService.guardarComentarioValoracion(comentario);
@@ -201,7 +210,7 @@ public class RecetaServiceTest {
     void testGuardarComentarioValoracion_InvalidValoracion() {
         ComentarioValoracion comentario = new ComentarioValoracion();
         comentario.setComentario("Regular receta");
-        comentario.setValoracion((long) 6);
+        comentario.setValoracion(6L);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             recetaService.guardarComentarioValoracion(comentario);
@@ -234,4 +243,7 @@ public class RecetaServiceTest {
         verify(recetaRepository).findById(1L);
         verify(recetaRepository, never()).save(any());
     }
+
+    
+
 }

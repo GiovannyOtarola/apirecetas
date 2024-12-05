@@ -3,6 +3,7 @@ package com.example.apirecetas;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -297,6 +298,113 @@ public class PrivateControllerTest {
         // Verificamos que no se haya hecho ninguna otra interacción con userService después de la llamada
         verify(userService).findById(1); // Asegúrate de que findById fue llamado
         verifyNoMoreInteractions(userService); // Verifica que no haya más interacciones con el mock
+    }
+
+    @Test
+    void testGuardarComentarioValoracion_Success() {
+        when(recetaService.getRecetaById(1L)).thenReturn(receta);
+        when(recetaService.guardarComentarioValoracion(comentario)).thenReturn(comentario);
+    
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+    
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Muy buena receta", response.getBody().getComentario());
+        verify(recetaService).guardarComentarioValoracion(comentario);
+    }
+
+    @Test
+    void testGuardarComentarioValoracion_ValidRequest() {
+        // Configurar comportamiento simulado del servicio
+        when(recetaService.getRecetaById(1L)).thenReturn(receta);
+        when(recetaService.guardarComentarioValoracion(any(ComentarioValoracion.class))).thenReturn(comentario);
+
+        // Realizar la prueba
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+
+        // Validar resultados
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        ComentarioValoracionView comentarioView = response.getBody();
+        assertEquals(1L, comentarioView.getId());
+        assertEquals("Muy buena receta", comentarioView.getComentario());
+        assertEquals(5L, comentarioView.getValoracion());
+        assertEquals(1L, comentarioView.getRecetaId());
+
+        // Verificar interacciones
+        verify(recetaService).getRecetaById(1L);
+        verify(recetaService).guardarComentarioValoracion(any(ComentarioValoracion.class));
+    }
+
+    @Test
+    void testGuardarComentarioValoracion_InvalidComentario_Null() {
+        // Realizar la prueba con un comentario nulo
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, null);
+
+        // Validar resultados
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
+
+    @Test
+    void testGuardarComentarioValoracion_InvalidComentario_Empty() {
+        // Configurar un comentario inválido
+        comentario.setComentario("");
+
+        // Realizar la prueba
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+
+        // Validar resultados
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
+
+     @Test
+    void testGuardarComentarioValoracion_InvalidValoracion() {
+        // Configurar un comentario con valoración inválida
+        comentario.setValoracion(6L);
+
+        // Realizar la prueba
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+
+        // Validar resultados
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
+
+    @Test
+    void testGuardarComentarioValoracion_RecetaNotFound() {
+        // Simular que la receta no existe
+        when(recetaService.getRecetaById(1L)).thenReturn(null);
+
+        // Realizar la prueba
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+
+        // Validar resultados
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(null, response.getBody());
+
+        // Verificar interacciones
+        verify(recetaService).getRecetaById(1L);
+        verify(recetaService, never()).guardarComentarioValoracion(any(ComentarioValoracion.class));
+    }
+
+    @Test
+    void testGuardarComentarioValoracion_InternalServerError() {
+        // Configurar comportamiento simulado para lanzar excepción
+        when(recetaService.getRecetaById(1L)).thenReturn(receta);
+        when(recetaService.guardarComentarioValoracion(any(ComentarioValoracion.class)))
+                .thenThrow(new RuntimeException("Database error"));
+
+        // Realizar la prueba
+        ResponseEntity<ComentarioValoracionView> response = privateController.guardarComentarioValoracion(1L, comentario);
+
+        // Validar resultados
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(null, response.getBody());
+
+        // Verificar interacciones
+        verify(recetaService).getRecetaById(1L);
+        verify(recetaService).guardarComentarioValoracion(any(ComentarioValoracion.class));
     }
 
 }
