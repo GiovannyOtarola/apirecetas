@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class JWTAuthenticationConfigTest {
@@ -47,7 +50,7 @@ class JWTAuthenticationConfigTest {
 
             // Verificar el resultado
             assertNotNull(token);
-            assertNotNull(token.startsWith("Bearer "));
+            assertTrue(token.startsWith("Bearer "));
         }
     }
 }

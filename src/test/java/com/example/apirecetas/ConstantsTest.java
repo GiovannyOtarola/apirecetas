@@ -65,6 +65,8 @@ public class ConstantsTest {
         } catch (Exception e) {
             // Unwrap the exception and check if it's an UnsupportedOperationException
             if (e.getCause() instanceof UnsupportedOperationException) {
+                assertTrue(e.getCause() instanceof UnsupportedOperationException, 
+                "Se esperaba UnsupportedOperationException pero se lanzó otra excepción.");
                 return;  // Test passes if the cause is UnsupportedOperationException
             } else {
                 throw e;  // Re-throw if it's not the expected exception
