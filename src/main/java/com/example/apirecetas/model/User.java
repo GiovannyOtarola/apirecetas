@@ -31,7 +31,7 @@ public class User implements UserDetails {
     private String role;
 
     public User(String username, String name, String email, String password) {
-        throw new UnsupportedOperationException("Este constructor no está implementado.");
+       //este constructor esta vacio intencionalmente.
     }
 
     public User() {
